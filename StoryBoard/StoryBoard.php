@@ -85,7 +85,7 @@ class StoryBoardPlugin extends MantisPlugin
    {
       if ( !plugin_is_installed( 'WhiteboardMenu' ) && plugin_config_get( 'ShowMenu' ) && $this->getUserHasLevel() )
       {
-         return '<a href="' . plugin_page( 'init' ) . '">' . plugin_lang_get( 'menu_title' ) . '</a>';
+         return '<a href="' . plugin_page( 'storyboard_index' ) . '">' . plugin_lang_get( 'menu_title' ) . '</a>';
       }
       return null;
    }

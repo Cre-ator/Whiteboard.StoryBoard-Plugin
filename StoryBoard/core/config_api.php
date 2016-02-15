@@ -3,6 +3,16 @@
 class config_api
 {
    /**
+    * Get suffix of mantis version
+    *
+    * @return string
+    */
+   public function getMantisVersion()
+   {
+      return substr( MANTIS_VERSION, 0, 4 );
+   }
+
+   /**
     * Updates a value in the plugin configuration
     *
     * @param $value
@@ -44,27 +54,11 @@ class config_api
    }
 
    /**
-    * @param $value
-    * @param $constant
-    */
-   public function updateDynamicValues( $value, $constant )
-   {
-      $column_amount = plugin_config_get( 'CAmount' );
-
-      for ( $columnIndex = 1; $columnIndex <= $column_amount; $columnIndex++ )
-      {
-         $act_value = $value . $columnIndex;
-
-         $this->updateValue( $act_value, $constant );
-      }
-   }
-
-   /**
-    * 
+    *
     */
    public function printTableHead()
    {
-      if ( substr( MANTIS_VERSION, 0, 4 ) == '1.2.' )
+      if ( $this->getMantisVersion() == '1.2.' )
       {
          echo '<table align="center" class="width75" cellspacing="1">';
       }
@@ -80,7 +74,7 @@ class config_api
     */
    public function printTableFoot()
    {
-      if ( substr( MANTIS_VERSION, 0, 4 ) == '1.2.' )
+      if ( $this->getMantisVersion() == '1.2.' )
       {
          echo '</table>';
       }
@@ -96,7 +90,7 @@ class config_api
     */
    public function printTableRowHead()
    {
-      if ( substr( MANTIS_VERSION, 0, 4 ) == '1.2.' )
+      if ( $this->getMantisVersion() == '1.2.' )
       {
          echo '<tr ' . helper_alternate_class() . '>';
       }
