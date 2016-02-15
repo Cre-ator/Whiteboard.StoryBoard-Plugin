@@ -49,6 +49,37 @@ class StoryBoardPlugin extends MantisPlugin
       );
    }
 
+   function schema()
+   {
+      return array
+      (
+         array
+         (
+            'CreateTableSQL', array( plugin_table( 'card' ), "
+            id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            bug_id          I       NOTNULL UNSIGNED,
+            p_type_id       I       UNSIGNED,
+
+            name            C(250)  NOTNULL DEFAULT '',
+            priority        I       UNSIGNED,
+            risk            C(250)  DEFAULT '',
+            story_pt        C(250)  DEFAULT '',
+            story_pt_post   C(250)  DEFAULT '',
+            text            C(1000) DEFAULT '',
+
+            acc_crit        C(1000) DEFAULT ''
+            " )
+         ),
+         array
+         (
+            'CreateTableSQL', array( plugin_table( 'type' ), "
+            id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            type            C(250)  NOTNULL DEFAULT ''
+            " )
+         )
+      );
+   }
+
    /**
     * Check if user has level greater or equal then plugin access level
     *
