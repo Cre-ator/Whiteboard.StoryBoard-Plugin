@@ -1,0 +1,7 @@
+<?php
+$s_plugin_StoryBoard_menu_title = 'Story Board';
+
+$s_plugin_StoryBoard_config_title = 'Story Board - Configuration';
+$s_plugin_StoryBoard_config_caption = 'General Configuration';
+$s_plugin_StoryBoard_config_accesslevel = 'Access Level';
+$s_plugin_StoryBoard_config_footer = 'Show Plugin Info In Footer?';
