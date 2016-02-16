@@ -48,10 +48,10 @@ $config_api->printTableRowHead();
 $config_api->printFormCategory( 1, 'config_types', false );
 echo '<td colspan="1">';
 
-$types_rows = $db_api->getFullTypes();
-foreach ( $types_rows as $types_row )
+$type_rows = $db_api->selectAllTypes();
+foreach ( $type_rows as $type_row )
 {
-   $types[] = $types_row[1];
+   $types[] = $type_row[1];
 }
 
 echo '<span class="select">';

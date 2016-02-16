@@ -1,6 +1,6 @@
 <?php
 require_once STORYBOARD_CORE_URI . 'db_api.php';
-require_once STORYBOARD_CORE_URI . 'print_api.php';
+require_once STORYBOARD_CORE_URI . 'storyboard_print_api.php';
 
 $db_api = new db_api();
 $print_api = new print_api();

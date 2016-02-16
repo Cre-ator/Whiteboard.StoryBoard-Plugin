@@ -10,3 +10,12 @@ $s_plugin_StoryBoard_config_add = 'Hinzufügen';
 $s_plugin_StoryBoard_config_types = 'Verfügbare Storycard-Typen';
 $s_plugin_StoryBoard_config_del = 'Löschen';
 $s_plugin_StoryBoard_config_change = 'Ändern';
+
+$s_plugin_StoryBoard_card_name = 'Name der Story';
+$s_plugin_StoryBoard_card_type = 'Storycard-Typ';
+$s_plugin_StoryBoard_card_priority = 'Priotisierung';
+$s_plugin_StoryBoard_card_risk = 'Risiko';
+$s_plugin_StoryBoard_card_story_pt = 'Story Points';
+$s_plugin_StoryBoard_card_story_pt_post = 'Story Points (Post-Schätzung)';
+$s_plugin_StoryBoard_card_text = 'Beschreibung';
+$s_plugin_StoryBoard_card_acc_crit = 'Akzeptanzkriterien';
