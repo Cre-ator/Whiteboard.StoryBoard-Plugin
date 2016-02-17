@@ -36,7 +36,7 @@ echo '</tr>';
 
 
 $config_api->printTableRowHead();
-$config_api->printFormCategory( 1,  'config_typeadd', false );
+$config_api->printFormCategory( 1, 'config_typeadd', false );
 $type = gpc_get_string( 'type', '' );
 echo '<td colspan="1">';
 echo '<input type="text" id="type" name="type" size="15" maxlength="128" value="', $type, '">&nbsp';
@@ -48,7 +48,7 @@ $config_api->printTableRowHead();
 $config_api->printFormCategory( 1, 'config_types', false );
 echo '<td colspan="1">';
 
-$type_rows = $db_api->selectAllTypes();
+$type_rows = $db_api->selectAllAttributes( 'type' );
 foreach ( $type_rows as $type_row )
 {
    $types[] = $type_row[1];
@@ -73,13 +73,42 @@ echo '</td>';
 echo '</tr>';
 
 
+$config_api->printTableRowHead();
+$config_api->printFormCategory( 1, 'config_priorityadd', false );
+$priority_level = gpc_get_string( 'priority_level', '' );
+echo '<td colspan="1">';
+echo '<input type="text" id="priority_level" name="priority_level" size="15" maxlength="128" value="', $priority_level, '">&nbsp';
+echo '<input type="submit" name="addpriority_level" class="button" value="' . plugin_lang_get( 'config_add' ) . '">';
+echo '</td>';
+echo '</tr>';
 
+$config_api->printTableRowHead();
+$config_api->printFormCategory( 1, 'config_prioritys', false );
+echo '<td colspan="1">';
 
+$priority_level_rows = $db_api->selectAllAttributes( 'priority' );
+foreach ( $priority_level_rows as $priority_level_row )
+{
+   $priority_levels[] = $priority_level_row[1];
+}
 
+echo '<span class="select">';
+echo '<select ' . helper_get_tab_index() . ' id="priority_levels" name="priority_levels">';
+if ( !is_null( $priority_levels ) )
+{
+   foreach ( $priority_levels as $priority_level )
+   {
+      echo '<option value="' . $priority_level . '">' . $priority_level . '</option>';
+   }
+}
+echo '</select>&nbsp';
+$new_priority_level = gpc_get_string( 'newpriority_level', '' );
+echo '<input type="submit" name="deletepriority_level" class="button" value="' . plugin_lang_get( 'config_del' ) . '">&nbsp';
+echo '<input type="text" id="newpriority_level" name="newpriority_level" size="15" maxlength="128" value="', $new_priority_level, '">&nbsp';
+echo '<input type="submit" name="changepriority_level" class="button" value="' . plugin_lang_get( 'config_change' ) . '">';
 
-
-
-
+echo '</td>';
+echo '</tr>';
 
 
 echo '<tr>';

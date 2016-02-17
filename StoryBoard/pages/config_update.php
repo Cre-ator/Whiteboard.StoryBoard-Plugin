@@ -13,6 +13,9 @@ $option_change = gpc_get_bool( 'change', false );
 $option_addtype = gpc_get_bool( 'addtype', false );
 $option_deltype = gpc_get_bool( 'deletetype', false );
 $option_changetype = gpc_get_bool( 'changetype', false );
+$option_addpriority_level = gpc_get_bool( 'addpriority_level', false );
+$option_delpriority_level = gpc_get_bool( 'deletepriority_level', false );
+$option_changepriority_level = gpc_get_bool( 'changepriority_level', false );
 
 /**
  * Submit configuration changes
@@ -24,42 +27,82 @@ if ( $option_change )
 }
 
 /**
- * Add a document type
+ * Add a type
  */
 if ( $option_addtype )
 {
    if ( isset( $_POST['type'] ) )
    {
-      $db_api->insertType( $_POST['type'] );
+      $db_api->insertAttribute( $_POST['type'], 'type' );
    }
 }
 
 /**
- * Delete a document type
+ * Delete a type
  */
 if ( $option_deltype )
 {
    if ( isset( $_POST['types'] ) )
    {
       $type_string = $_POST['types'];
-      $type_id = $db_api->selectTypeidByType( $type_string );
+      $type_id = $db_api->selectAttributeidByAttribute( $type_string, 'type' );
 
-      $db_api->deleteType( $type_string );
+      $db_api->deleteAttribute( $type_string, 'type' );
    }
 }
 
 /**
- * Change a document type
+ * Change a type
  */
 if ( $option_changetype )
 {
    if ( isset( $_POST['types'] ) && isset( $_POST['newtype'] ) )
    {
       $type_string = $_POST['types'];
-      $type_id = $db_api->selectTypeidByType( $type_string );
+      $type_id = $db_api->selectAttributeidByAttribute( $type_string, 'type' );
       $new_type_string = $_POST['newtype'];
 
-      $db_api->updateType( $type_id, $new_type_string );
+      $db_api->updateAttribute( $type_id, $new_type_string, 'type' );
+   }
+}
+
+/**
+ * Add a priority_level
+ */
+if ( $option_addpriority_level )
+{
+   if ( isset( $_POST['priority_level'] ) )
+   {
+      $db_api->insertAttribute( $_POST['priority_level'], 'priority' );
+   }
+}
+
+/**
+ * Delete a priority_level
+ */
+if ( $option_delpriority_level )
+{
+   if ( isset( $_POST['priority_levels'] ) )
+   {
+      $priority_level_string = $_POST['priority_levels'];
+      $priority_level_id = $db_api->selectAttributeidByAttribute( $priority_level_string, 'priority' );
+
+      $db_api->deleteAttribute( $priority_level_string, 'priority' );
+   }
+}
+
+/**
+ * Change a priority_level
+ */
+if ( $option_changepriority_level )
+{
+   if ( isset( $_POST['priority_levels'] ) && isset( $_POST['newpriority_level'] ) )
+   {
+      $priority_level_string = $_POST['priority_levels'];
+      $priority_level_id = $db_api->selectAttributeidByAttribute( $priority_level_string, 'priority' );
+      $new_priority_level_string = $_POST['newpriority_level'];
+
+      $db_api->updateAttribute( $priority_level_id, $new_priority_level_string, 'priority' );
    }
 }
 

@@ -58,58 +58,76 @@ class db_api
       return $bug_array;
    }
 
-   // ---------- BEGIN type entity ---------------------------------------------------------------------------------- //
+   // ---------- BEGIN attribute entity ----------------------------------------------------------------------------- //
 
    /**
-    * Get all types
-    *
-    * @return array
+    * @param $attribute
+    * @return null|string
     */
-   public function selectAllTypes()
+   private function initialize_attribute_table( $attribute )
    {
+      $plugin_attribute_table = null;
       if ( $this->getMantisVersion() == '1.2.' )
       {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
+         if ( $attribute == 'type' )
+         {
+            $plugin_attribute_table = plugin_table( 'type', 'StoryBoard' );
+         }
+         elseif ( $attribute == 'priority' )
+         {
+            $plugin_attribute_table = plugin_table( 'priority', 'StoryBoard' );
+         }
       }
       else
       {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
+         if ( $attribute == 'type' )
+         {
+            $plugin_attribute_table = db_get_table( 'plugin_StoryBoard_type' );
+         }
+         elseif ( $attribute == 'priority' )
+         {
+            $plugin_attribute_table = db_get_table( 'plugin_StoryBoard_priority' );
+         }
       }
 
-      $query = "SELECT * FROM $plugin_type_table ORDER BY type ASC";
+      return $plugin_attribute_table;
+   }
+
+   /**
+    * Get all attributes
+    *
+    * @param $attribute
+    * @return array
+    */
+   public function selectAllAttributes( $attribute )
+   {
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $query = "SELECT * FROM $plugin_attribute_table ORDER BY " . $attribute . " ASC";
 
       $result = $this->mysqli->query( $query );
-      $types = array();
+      $attributes = array();
       if ( 0 != $result->num_rows )
       {
          while ( $row = $result->fetch_row() )
          {
-            $types[] = $row;
+            $attributes[] = $row;
          }
       }
 
-      return $types;
+      return $attributes;
    }
 
    /**
     * Get the primary key for a specific type string
     *
-    * @param $string
+    * @param $attribute_string
+    * @param $attribute
     * @return mixed
     */
-   public function selectTypeidByType( $string )
+   public function selectAttributeidByAttribute( $attribute_string, $attribute )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
-      }
-
-      $query = "SELECT t.id FROM $plugin_type_table t
-         WHERE t.type = '" . $string . "'";
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $query = "SELECT id FROM $plugin_attribute_table WHERE " . $attribute . " = '" . $attribute_string . "'";
 
       $result = $this->mysqli->query( $query );
       if ( 0 != $result->num_rows )
@@ -127,22 +145,14 @@ class db_api
    /**
     * Get type by specified type id
     *
-    * @param $type_id
+    * @param $attribute_id
+    * @param $attribute
     * @return array|null
     */
-   public function selectTypeById( $type_id )
+   public function selectAttributeById( $attribute_id, $attribute )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
-      }
-
-      $query = "SELECT type FROM $plugin_type_table
-         WHERE id = " . $type_id;
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $query = "SELECT " . $attribute . " FROM $plugin_attribute_table WHERE id = " . $attribute_id;
 
       $result = $this->mysqli->query( $query );
       if ( 0 != $result->num_rows )
@@ -160,52 +170,33 @@ class db_api
    /**
     * Add a specific type
     *
-    * @param $string
+    * @param $attribute_string
+    * @param $attribute
     */
-   public function insertType( $string )
+   public function insertAttribute( $attribute_string, $attribute )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
-      }
-
-      $query = "INSERT INTO $plugin_type_table ( id, type )
-         SELECT null,'" . $string . "'
-         FROM DUAL WHERE NOT EXISTS (
-         SELECT 1 FROM $plugin_type_table
-         WHERE type = '" . $string . "')";
-
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $query = "INSERT INTO $plugin_attribute_table ( id, " . $attribute ." ) SELECT null,'"
+         . $attribute_string . "' FROM DUAL WHERE NOT EXISTS ( SELECT 1 FROM $plugin_attribute_table WHERE "
+         . $attribute . " = '" . $attribute_string . "')";
       $this->mysqli->query( $query );
    }
 
    /**
     * Update an existing type string
     *
-    * @param $type_id
-    * @param $new_type_string
+    * @param $attribute_id
+    * @param $new_attribute_string
+    * @param $attribute
     */
-   public function updateType( $type_id, $new_type_string )
+   public function updateAttribute( $attribute_id, $new_attribute_string, $attribute )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
-      }
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
 
       $query = "SET SQL_SAFE_UPDATES = 0";
       $this->mysqli->query( $query );
 
-      $query = "UPDATE $plugin_type_table
-         SET type = '" . $new_type_string . "'
-         WHERE id = " . $type_id;
-
+      $query = "UPDATE $plugin_attribute_table SET " . $attribute . " = '" . $new_attribute_string . "' WHERE id = " . $attribute_id;
       $this->mysqli->query( $query );
 
       $query = "SET SQL_SAFE_UPDATES = 1";
@@ -216,27 +207,17 @@ class db_api
     * Delete a specific type
     *
     * @param $string
+    * @param $attribute
     */
-   public function deleteType( $string )
+   public function deleteAttribute( $string, $attribute )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
-      }
-
-      $primary_key = $this->selectTypeidByType( $string );
-
-      $query = "DELETE FROM $plugin_type_table
-         WHERE id = " . $primary_key;
-
+      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $primary_key = $this->selectAttributeidByAttribute( $string, $attribute );
+      $query = "DELETE FROM $plugin_attribute_table WHERE id = " . $primary_key;
       $this->mysqli->query( $query );
    }
 
-   // ---------- END type entity ------------------------------------------------------------------------------------ //
+   // ---------- END attribute entity ------------------------------------------------------------------------------- //
 
    // ---------- BEGIN card entity ---------------------------------------------------------------------------------- //
 
@@ -353,8 +334,6 @@ class db_api
             text = '" . $card_text . "',
             acc_crit = '" . $card_acc_crit . "'";
          $query .= " WHERE bug_id = " . $bug_id;
-
-         var_dump( $query );
 
          $this->mysqli->query( $query );
 

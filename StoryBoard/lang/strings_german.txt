@@ -5,9 +5,12 @@ $s_plugin_StoryBoard_config_title = 'Story Board - Konfiguration';
 $s_plugin_StoryBoard_config_caption = 'Allgemeine Einstellungen';
 $s_plugin_StoryBoard_config_accesslevel = 'Zugriffslevel für Plugin';
 $s_plugin_StoryBoard_config_footer = 'Plugin Info in Footer anzeigen?';
+
 $s_plugin_StoryBoard_config_typeadd = 'Storycard-Typ hinzufügen';
-$s_plugin_StoryBoard_config_add = 'Hinzufügen';
+$s_plugin_StoryBoard_config_priorityadd = 'Prioritätslevel hinzufügen';
 $s_plugin_StoryBoard_config_types = 'Verfügbare Storycard-Typen';
+$s_plugin_StoryBoard_config_prioritys = 'Verfügbare Prioritätslevel';
+$s_plugin_StoryBoard_config_add = 'Hinzufügen';
 $s_plugin_StoryBoard_config_del = 'Löschen';
 $s_plugin_StoryBoard_config_change = 'Ändern';
 

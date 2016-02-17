@@ -81,6 +81,13 @@ class StoryBoardPlugin extends MantisPlugin
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             type            C(250)  NOTNULL DEFAULT ''
             " )
+         ),
+         array
+         (
+            'CreateTableSQL', array( plugin_table( 'priority' ), "
+            id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            priority        C(250)  NOTNULL DEFAULT ''
+            " )
          )
       );
    }
@@ -165,7 +172,7 @@ class StoryBoardPlugin extends MantisPlugin
          $card_name = $card[3];
          if ( !is_null( $card[2] ) )
          {
-            $card_type = $db_api->selectTypeById( $card[2] );
+            $card_type = $db_api->selectAttributeById( $card[2], 'type' );
          }
          $card_priority = $card[4];
          $card_risk = $card[5];
@@ -204,7 +211,7 @@ class StoryBoardPlugin extends MantisPlugin
       $bug_id = $bug->id;
       $card_name = gpc_get_string( 'card_name', '' );
       $card_type = gpc_get_string( 'card_type', '' );
-      $card_type_id = $db_api->selectTypeidByType( $card_type );
+      $card_type_id = $db_api->selectAttributeidByAttribute( $card_type, 'type' );
       $card_priority = gpc_get_string( 'card_priority', '' );
       $card_risk = gpc_get_string( 'card_risk', '' );
       $card_story_pt = gpc_get_string( 'card_story_pt', '' );

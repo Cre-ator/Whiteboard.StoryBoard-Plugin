@@ -117,8 +117,8 @@ class storyboard_print_api
          echo '<legend><span>' . plugin_lang_get( 'menu_title' ) . '</span></legend>';
       }
       $this->printBugReportTextInput( 'card_name' );
-      $this->printBugReportSelectInput( 'card_type' );
-      $this->printBugReportTextInput( 'card_priority' );
+      $this->printBugReportSelectInput( 'card_type', 'types' );
+      $this->printBugReportSelectInput( 'card_priority', 'priorities' );
       $this->printBugReportTextInput( 'card_risk' );
       $this->printBugReportTextInput( 'card_story_pt' );
       $this->printBugReportTextInput( 'card_story_pt_post' );
@@ -156,8 +156,8 @@ class storyboard_print_api
       echo '</tr>';
 
       $this->printBugUpdateTextInput( 'card_name', $card_name );
-      $this->printBugUpdateSelectInput( 'card_type', $card_type );
-      $this->printBugUpdateTextInput( 'card_priority', $card_priority );
+      $this->printBugUpdateSelectInput( 'card_type', $card_type, 'types' );
+      $this->printBugUpdateSelectInput( 'card_priority', $card_priority, 'priorities' );
       $this->printBugUpdateTextInput( 'card_risk', $card_risk );
       $this->printBugUpdateTextInput( 'card_story_pt', $card_story_pt );
       $this->printBugUpdateTextInput( 'card_story_pt_post', $card_story_pt_post );
@@ -198,16 +198,24 @@ class storyboard_print_api
 
    /**
     * @param $input
+    * @param $attribute
     */
-   public function printBugReportSelectInput( $input )
+   public function printBugReportSelectInput( $input, $attribute )
    {
       $db_api = new db_api();
-
-      $types = array();
-      $type_rows = $db_api->selectAllTypes();
-      foreach ( $type_rows as $type_row )
+      $values = array();
+      $value_rows = null;
+      if ( $attribute == 'types' )
       {
-         $types[] = $type_row[1];
+         $value_rows = $db_api->selectAllAttributes( 'type' );
+      }
+      elseif ( $attribute == 'priorities' )
+      {
+         $value_rows = $db_api->selectAllAttributes( 'priority' );
+      }
+      foreach ( $value_rows as $value_row )
+      {
+         $values[] = $value_row[1];
       }
 
       if ( $this->getMantisVersion() == '1.2.' )
@@ -219,11 +227,11 @@ class storyboard_print_api
          echo '<td>';
          echo '<span class="select">';
          echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
-         if ( !is_null( $types ) )
+         if ( !is_null( $values ) )
          {
-            foreach ( $types as $type )
+            foreach ( $values as $value )
             {
-               echo '<option value="' . $type . '">' . $type . '</option>';
+               echo '<option value="' . $value . '">' . $value . '</option>';
             }
          }
          echo '</select>&nbsp';
@@ -236,11 +244,11 @@ class storyboard_print_api
          echo '<label><span>' . plugin_lang_get( $input ) . '</span></label>';
          echo '<span class="select">';
          echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
-         if ( !is_null( $types ) )
+         if ( !is_null( $values ) )
          {
-            foreach ( $types as $type )
+            foreach ( $values as $value )
             {
-               echo '<option value="' . $type . '">' . $type . '</option>';
+               echo '<option value="' . $value . '">' . $value . '</option>';
             }
          }
          echo '</select>&nbsp';
@@ -266,16 +274,25 @@ class storyboard_print_api
 
    /**
     * @param $input
-    * @param $value
+    * @param $input_value
+    * @param $attribute
     */
-   public function printBugUpdateSelectInput( $input, $value )
+   public function printBugUpdateSelectInput( $input, $input_value, $attribute )
    {
       $db_api = new db_api();
-      $types = array();
-      $type_rows = $db_api->selectAllTypes();
-      foreach ( $type_rows as $type_row )
+      $values = array();
+      $value_rows = null;
+      if ( $attribute == 'types' )
       {
-         $types[] = $type_row[1];
+         $value_rows = $db_api->selectAllAttributes( 'type' );
+      }
+      elseif ( $attribute == 'priorities' )
+      {
+         $value_rows = $db_api->selectAllAttributes( 'priority' );
+      }
+      foreach ( $value_rows as $value_row )
+      {
+         $values[] = $value_row[1];
       }
 
       $this->printRow();
@@ -283,16 +300,16 @@ class storyboard_print_api
       echo '<td colspan="5">';
       echo '<span class="select">';
       echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
-      if ( !is_null( $types ) )
+      if ( !is_null( $values ) )
       {
-         foreach ( $types as $type )
+         foreach ( $values as $value )
          {
-            echo '<option value="' . $type . '"';
-            if ( $type == $value )
+            echo '<option value="' . $value . '"';
+            if ( $value == $input_value )
             {
                echo ' selected';
             }
-            echo '>' . $type . '</option>';
+            echo '>' . $value . '</option>';
          }
       }
       echo '</select>&nbsp';
