@@ -1,27 +1,28 @@
 <?php
-require_once STORYBOARD_CORE_URI . 'constant_api.php';
-require_once STORYBOARD_CORE_URI . 'config_api.php';
-require_once STORYBOARD_CORE_URI . 'db_api.php';
-$config_api = new config_api();
-$db_api = new db_api();
+require_once STORYBOARD_CORE_URI . 'storyboard_constant_api.php';
+require_once STORYBOARD_CORE_URI . 'storyboard_config_api.php';
+require_once STORYBOARD_CORE_URI . 'storyboard_db_api.php';
+$storyboard_config_api = new storyboard_config_api();
+$storyboard_db_api = new storyboard_db_api();
 
 auth_reauthenticate();
 access_ensure_global_level( plugin_config_get( 'AccessLevel' ) );
 
 html_page_top1( plugin_lang_get( 'config_title' ) );
 html_page_top2();
+print_manage_menu();
 
 echo '<br/>';
 echo '<form action="' . plugin_page( 'config_update' ) . '" method="post">';
 echo form_security_field( 'plugin_StoryBoard_config_update' );
 
-$config_api->printTableHead();
-$config_api->printTableRowHead();
-$config_api->printFormTitle( 2, 'config_caption' );
+$storyboard_config_api->printTableHead();
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormTitle( 2, 'config_caption' );
 echo '</tr>';
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_accesslevel', true );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_accesslevel', true );
 echo '<td width="200px" colspan="1">';
 echo '<select name="AccessLevel">';
 print_enum_string_option_list( 'access_levels', plugin_config_get( 'AccessLevel', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT ) );
@@ -29,14 +30,14 @@ echo '</select>';
 echo '</td>';
 echo '</tr>';
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_footer', false );
-$config_api->printButton( 'ShowInFooter' );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_footer', false );
+$storyboard_config_api->printButton( 'ShowInFooter' );
 echo '</tr>';
 
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_typeadd', false );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_typeadd', false );
 $type = gpc_get_string( 'type', '' );
 echo '<td colspan="1">';
 echo '<input type="text" id="type" name="type" size="15" maxlength="128" value="', $type, '">&nbsp';
@@ -44,11 +45,11 @@ echo '<input type="submit" name="addtype" class="button" value="' . plugin_lang_
 echo '</td>';
 echo '</tr>';
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_types', false );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_types', false );
 echo '<td colspan="1">';
 
-$type_rows = $db_api->selectAllAttributes( 'type' );
+$type_rows = $storyboard_db_api->select_all_attributes( 'type' );
 foreach ( $type_rows as $type_row )
 {
    $types[] = $type_row[1];
@@ -73,8 +74,8 @@ echo '</td>';
 echo '</tr>';
 
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_priorityadd', false );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_priorityadd', false );
 $priority_level = gpc_get_string( 'priority_level', '' );
 echo '<td colspan="1">';
 echo '<input type="text" id="priority_level" name="priority_level" size="15" maxlength="128" value="', $priority_level, '">&nbsp';
@@ -82,11 +83,11 @@ echo '<input type="submit" name="addpriority_level" class="button" value="' . pl
 echo '</td>';
 echo '</tr>';
 
-$config_api->printTableRowHead();
-$config_api->printFormCategory( 1, 'config_prioritys', false );
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_prioritys', false );
 echo '<td colspan="1">';
 
-$priority_level_rows = $db_api->selectAllAttributes( 'priority' );
+$priority_level_rows = $storyboard_db_api->select_all_attributes( 'priority' );
 foreach ( $priority_level_rows as $priority_level_row )
 {
    $priority_levels[] = $priority_level_row[1];
@@ -110,6 +111,16 @@ echo '<input type="submit" name="changepriority_level" class="button" value="' .
 echo '</td>';
 echo '</tr>';
 
+$storyboard_config_api->printTableRowHead();
+$storyboard_config_api->printFormCategory( 1, 'config_status_cols', false );
+echo '<td valign="top" width="100px">';
+echo '<select name="status_cols[]" multiple="multiple">';
+print_enum_string_option_list( 'status', plugin_config_get( 'status_cols', 50 ) );
+echo '</select>';
+echo '</td>';
+echo '</tr>';
+
+
 
 echo '<tr>';
 echo '<td class="center" colspan="2">';
@@ -117,7 +128,7 @@ echo '<input type="submit" name="change" class="button" value="' . lang_get( 'up
 echo '</td>';
 echo '</tr>';
 
-$config_api->printTableFoot();
+$storyboard_config_api->printTableFoot();
 echo '</form>';
 
 html_page_bottom1();

@@ -41,7 +41,7 @@ class StoryBoardPlugin extends MantisPlugin
          . DIRECTORY_SEPARATOR
          . 'core'
          . DIRECTORY_SEPARATOR;
-      require_once( $t_core_path . 'constant_api.php' );
+      require_once( $t_core_path . 'storyboard_constant_api.php' );
    }
 
    function config()
@@ -51,6 +51,13 @@ class StoryBoardPlugin extends MantisPlugin
          'AccessLevel' => ADMINISTRATOR,
          'ShowInFooter' => ON,
          'ShowMenu' => ON,
+
+         'status_cols' => array(
+            '0' => 20,
+            '1' => 30,
+            '2' => 40,
+            '3' => 50
+         ),
       );
    }
 
@@ -64,9 +71,9 @@ class StoryBoardPlugin extends MantisPlugin
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             bug_id          I       NOTNULL UNSIGNED,
             p_type_id       I       UNSIGNED,
+            p_priority_id   I       UNSIGNED,
 
             name            C(250)  NOTNULL DEFAULT '',
-            priority        C(250)  DEFAULT '',
             risk            C(250)  DEFAULT '',
             story_pt        C(250)  DEFAULT '',
             story_pt_post   C(250)  DEFAULT '',
@@ -141,9 +148,9 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function bugViewFields( $event )
    {
-      require_once( STORYBOARD_CORE_URI . 'db_api.php' );
+      require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
       require_once( STORYBOARD_CORE_URI . 'storyboard_print_api.php' );
-      $db_api = new db_api();
+      $storyboard_db_api = new storyboard_db_api();
       $storyboard_print_api = new storyboard_print_api();
       $bug_id = null;
 
@@ -157,9 +164,9 @@ class StoryBoardPlugin extends MantisPlugin
             break;
       }
 
-      $card_name = null;
       $card_type = null;
       $card_priority = null;
+      $card_name = null;
       $card_risk = null;
       $card_story_pt = null;
       $card_story_pt_post = null;
@@ -168,13 +175,16 @@ class StoryBoardPlugin extends MantisPlugin
 
       if ( $bug_id != null )
       {
-         $card = $db_api->selectStoryCard( $bug_id );
-         $card_name = $card[3];
+         $card = $storyboard_db_api->select_story_card( $bug_id );
          if ( !is_null( $card[2] ) )
          {
-            $card_type = $db_api->selectAttributeById( $card[2], 'type' );
+            $card_type = $storyboard_db_api->select_attribute_by_id( $card[2], 'type' );
          }
-         $card_priority = $card[4];
+         if ( !is_null( $card[3] ) )
+         {
+            $card_priority = $storyboard_db_api->select_attribute_by_id( $card[3], 'priority' );
+         }
+         $card_name = $card[4];
          $card_risk = $card[5];
          $card_story_pt = $card[6];
          $card_story_pt_post = $card[7];
@@ -205,14 +215,23 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function bugUpdateFields( $event, BugData $bug )
    {
-      require_once( STORYBOARD_CORE_URI . 'db_api.php' );
-      $db_api = new db_api();
+      require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+      $storyboard_db_api = new storyboard_db_api();
 
       $bug_id = $bug->id;
-      $card_name = gpc_get_string( 'card_name', '' );
       $card_type = gpc_get_string( 'card_type', '' );
-      $card_type_id = $db_api->selectAttributeidByAttribute( $card_type, 'type' );
+      $card_type_id = null;
+      if ( !is_null( $card_type ) )
+      {
+         $card_type_id = $storyboard_db_api->select_attributeid_by_attribute( $card_type, 'type' );
+      }
       $card_priority = gpc_get_string( 'card_priority', '' );
+      $card_priority_id = null;
+      if ( !is_null( $card_priority ) )
+      {
+         $card_priority_id = $storyboard_db_api->select_attributeid_by_attribute( $card_priority, 'priority' );
+      }
+      $card_name = gpc_get_string( 'card_name', '' );
       $card_risk = gpc_get_string( 'card_risk', '' );
       $card_story_pt = gpc_get_string( 'card_story_pt', '' );
       $card_story_pt_post = gpc_get_string( 'card_story_pt_post', '' );
@@ -222,10 +241,10 @@ class StoryBoardPlugin extends MantisPlugin
       switch ( $event )
       {
          case 'EVENT_REPORT_BUG':
-            $db_api->insertStoryCard( $bug_id, $card_name, $card_type_id, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_db_api->insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
             break;
          case 'EVENT_UPDATE_BUG':
-            $db_api->updateStoryCard( $bug_id, $card_name, $card_type_id, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_db_api->update_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
             break;
       }
    }

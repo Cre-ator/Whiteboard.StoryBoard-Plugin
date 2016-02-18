@@ -1,6 +1,6 @@
 <?php
 
-class db_api
+class storyboard_db_api
 {
    private $mysqli;
    private $dbPath;
@@ -23,7 +23,7 @@ class db_api
     *
     * @return string
     */
-   public function getMantisVersion()
+   public function get_mantis_version()
    {
       return substr( MANTIS_VERSION, 0, 4 );
    }
@@ -34,7 +34,7 @@ class db_api
     */
    public function get_bugarray_by_project( $project_id )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
+      if ( $this->get_mantis_version() == '1.2.' )
       {
          $bug_table = db_get_table( 'mantis_bug_table' );
       }
@@ -67,7 +67,7 @@ class db_api
    private function initialize_attribute_table( $attribute )
    {
       $plugin_attribute_table = null;
-      if ( $this->getMantisVersion() == '1.2.' )
+      if ( $this->get_mantis_version() == '1.2.' )
       {
          if ( $attribute == 'type' )
          {
@@ -99,7 +99,7 @@ class db_api
     * @param $attribute
     * @return array
     */
-   public function selectAllAttributes( $attribute )
+   public function select_all_attributes( $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
       $query = "SELECT * FROM $plugin_attribute_table ORDER BY " . $attribute . " ASC";
@@ -124,7 +124,7 @@ class db_api
     * @param $attribute
     * @return mixed
     */
-   public function selectAttributeidByAttribute( $attribute_string, $attribute )
+   public function select_attributeid_by_attribute( $attribute_string, $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
       $query = "SELECT id FROM $plugin_attribute_table WHERE " . $attribute . " = '" . $attribute_string . "'";
@@ -149,7 +149,7 @@ class db_api
     * @param $attribute
     * @return array|null
     */
-   public function selectAttributeById( $attribute_id, $attribute )
+   public function select_attribute_by_id( $attribute_id, $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
       $query = "SELECT " . $attribute . " FROM $plugin_attribute_table WHERE id = " . $attribute_id;
@@ -173,10 +173,10 @@ class db_api
     * @param $attribute_string
     * @param $attribute
     */
-   public function insertAttribute( $attribute_string, $attribute )
+   public function insert_attribute( $attribute_string, $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $query = "INSERT INTO $plugin_attribute_table ( id, " . $attribute ." ) SELECT null,'"
+      $query = "INSERT INTO $plugin_attribute_table ( id, " . $attribute . " ) SELECT null,'"
          . $attribute_string . "' FROM DUAL WHERE NOT EXISTS ( SELECT 1 FROM $plugin_attribute_table WHERE "
          . $attribute . " = '" . $attribute_string . "')";
       $this->mysqli->query( $query );
@@ -189,10 +189,9 @@ class db_api
     * @param $new_attribute_string
     * @param $attribute
     */
-   public function updateAttribute( $attribute_id, $new_attribute_string, $attribute )
+   public function update_attribute( $attribute_id, $new_attribute_string, $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-
       $query = "SET SQL_SAFE_UPDATES = 0";
       $this->mysqli->query( $query );
 
@@ -209,10 +208,10 @@ class db_api
     * @param $string
     * @param $attribute
     */
-   public function deleteAttribute( $string, $attribute )
+   public function delete_attribute( $string, $attribute )
    {
       $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $primary_key = $this->selectAttributeidByAttribute( $string, $attribute );
+      $primary_key = $this->select_attributeid_by_attribute( $string, $attribute );
       $query = "DELETE FROM $plugin_attribute_table WHERE id = " . $primary_key;
       $this->mysqli->query( $query );
    }
@@ -222,14 +221,12 @@ class db_api
    // ---------- BEGIN card entity ---------------------------------------------------------------------------------- //
 
    /**
-    * Get a card selected by a specific bug
-    *
-    * @param $bug_id
-    * @return array|null
+    * @return null|string
     */
-   public function selectStoryCard( $bug_id )
+   public function initialize_card_table()
    {
-      if ( $this->getMantisVersion() == '1.2.' )
+      $plugin_card_table = null;
+      if ( $this->get_mantis_version() == '1.2.' )
       {
          $plugin_card_table = plugin_table( 'card', 'StoryBoard' );
       }
@@ -238,6 +235,18 @@ class db_api
          $plugin_card_table = db_get_table( 'plugin_StoryBoard_card' );
       }
 
+      return $plugin_card_table;
+   }
+
+   /**
+    * Get a card selected by a specific bug
+    *
+    * @param $bug_id
+    * @return array|null
+    */
+   public function select_story_card( $bug_id )
+   {
+      $plugin_card_table = $this->initialize_card_table();
       $query = "SELECT * FROM $plugin_card_table
          WHERE bug_id = " . $bug_id;
 
@@ -255,32 +264,24 @@ class db_api
 
    /**
     * @param $bug_id
-    * @param $card_name
     * @param $card_type_id
-    * @param $card_priority
+    * @param $card_priority_id
+    * @param $card_name
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
     * @param $card_text
     * @param $card_acc_crit
     */
-   public function insertStoryCard( $bug_id, $card_name, $card_type_id, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_card_table = plugin_table( 'card', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_card_table = db_get_table( 'plugin_StoryBoard_card' );
-      }
-
-      $query = "INSERT INTO $plugin_card_table ( id, bug_id, p_type_id, name, priority, risk, story_pt, story_pt_post, text, acc_crit )
+      $plugin_card_table = $this->initialize_card_table();
+      $query = "INSERT INTO $plugin_card_table ( id, bug_id, p_type_id, p_priority_id, name, risk, story_pt, story_pt_post, text, acc_crit )
          SELECT null,"
          . $bug_id . ","
-         . $card_type_id . ",'"
+         . $card_type_id . ","
+         . $card_priority_id . ",'"
          . $card_name . "','"
-         . $card_priority . "','"
          . $card_risk . "','"
          . $card_story_pt . "','"
          . $card_story_pt_post . "','"
@@ -295,39 +296,31 @@ class db_api
 
    /**
     * @param $bug_id
-    * @param $card_name
     * @param $card_type_id
-    * @param $card_priority
+    * @param $card_priority_id
+    * @param $card_name
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
     * @param $card_text
     * @param $card_acc_crit
     */
-   public function updateStoryCard( $bug_id, $card_name, $card_type_id, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function update_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
    {
-      if ( $this->selectStoryCard( $bug_id ) == null )
+      if ( $this->select_story_card( $bug_id ) == null )
       {
-         $this->insertStoryCard( $bug_id, $card_name, $card_type_id, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+         $this->insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
       }
       else
       {
-         if ( $this->getMantisVersion() == '1.2.' )
-         {
-            $plugin_card_table = plugin_table( 'card', 'StoryBoard' );
-         }
-         else
-         {
-            $plugin_card_table = db_get_table( 'plugin_StoryBoard_card' );
-         }
-
+         $plugin_card_table = $this->initialize_card_table();
          $query = "SET SQL_SAFE_UPDATES = 0";
          $this->mysqli->query( $query );
 
          $query = "UPDATE $plugin_card_table
             SET p_type_id = " . $card_type_id . ",
+            p_priority_id = " . $card_priority_id . ",
             name = '" . $card_name . "',
-            priority = '" . $card_priority . "',
             risk = '" . $card_risk . "',
             story_pt = '" . $card_story_pt . "',
             story_pt_post = '" . $card_story_pt_post . "',
@@ -347,17 +340,9 @@ class db_api
     *
     * @param $bug_id
     */
-   public function deleteStoryCard( $bug_id )
+   public function delete_story_card( $bug_id )
    {
-      if ( $this->getMantisVersion() == '1.2.' )
-      {
-         $plugin_card_table = plugin_table( 'card', 'StoryBoard' );
-      }
-      else
-      {
-         $plugin_card_table = db_get_table( 'plugin_StoryBoard_card' );
-      }
-
+      $plugin_card_table = $this->initialize_card_table();
       $query = "DELETE FROM $plugin_card_table
          WHERE bug_id = " . $bug_id;
 

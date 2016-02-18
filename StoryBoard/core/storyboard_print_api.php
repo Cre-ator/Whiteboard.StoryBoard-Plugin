@@ -202,16 +202,16 @@ class storyboard_print_api
     */
    public function printBugReportSelectInput( $input, $attribute )
    {
-      $db_api = new db_api();
+      $storyboard_db_api = new storyboard_db_api();
       $values = array();
       $value_rows = null;
       if ( $attribute == 'types' )
       {
-         $value_rows = $db_api->selectAllAttributes( 'type' );
+         $value_rows = $storyboard_db_api->select_all_attributes( 'type' );
       }
       elseif ( $attribute == 'priorities' )
       {
-         $value_rows = $db_api->selectAllAttributes( 'priority' );
+         $value_rows = $storyboard_db_api->select_all_attributes( 'priority' );
       }
       foreach ( $value_rows as $value_row )
       {
@@ -227,6 +227,7 @@ class storyboard_print_api
          echo '<td>';
          echo '<span class="select">';
          echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
+         echo '<option value=""></option>';
          if ( !is_null( $values ) )
          {
             foreach ( $values as $value )
@@ -244,6 +245,7 @@ class storyboard_print_api
          echo '<label><span>' . plugin_lang_get( $input ) . '</span></label>';
          echo '<span class="select">';
          echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
+         echo '<option value=""></option>';
          if ( !is_null( $values ) )
          {
             foreach ( $values as $value )
@@ -279,16 +281,16 @@ class storyboard_print_api
     */
    public function printBugUpdateSelectInput( $input, $input_value, $attribute )
    {
-      $db_api = new db_api();
+      $storyboard_db_api = new storyboard_db_api();
       $values = array();
       $value_rows = null;
       if ( $attribute == 'types' )
       {
-         $value_rows = $db_api->selectAllAttributes( 'type' );
+         $value_rows = $storyboard_db_api->select_all_attributes( 'type' );
       }
       elseif ( $attribute == 'priorities' )
       {
-         $value_rows = $db_api->selectAllAttributes( 'priority' );
+         $value_rows = $storyboard_db_api->select_all_attributes( 'priority' );
       }
       foreach ( $value_rows as $value_row )
       {
@@ -300,6 +302,7 @@ class storyboard_print_api
       echo '<td colspan="5">';
       echo '<span class="select">';
       echo '<select ' . helper_get_tab_index() . ' id="' . $input . '" name="' . $input . '">';
+      echo '<option value=""></option>';
       if ( !is_null( $values ) )
       {
          foreach ( $values as $value )

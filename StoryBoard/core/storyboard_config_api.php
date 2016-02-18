@@ -1,6 +1,6 @@
 <?php
 
-class config_api
+class storyboard_config_api
 {
    /**
     * Get suffix of mantis version
