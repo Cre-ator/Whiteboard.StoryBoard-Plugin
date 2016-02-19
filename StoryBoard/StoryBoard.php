@@ -8,7 +8,7 @@ class StoryBoardPlugin extends MantisPlugin
       $this->description = '...';
       $this->page = 'config_page';
 
-      $this->version = '1.0.2';
+      $this->version = '1.0.3';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99',
@@ -30,6 +30,7 @@ class StoryBoardPlugin extends MantisPlugin
          'EVENT_VIEW_BUG_DETAILS' => 'bugViewFields',
          'EVENT_REPORT_BUG' => 'bugUpdateFields',
          'EVENT_UPDATE_BUG' => 'bugUpdateFields',
+         'EVENT_BUG_DELETED' => 'deleteBugReference',
       );
       return $hooks;
    }
@@ -71,14 +72,10 @@ class StoryBoardPlugin extends MantisPlugin
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             bug_id          I       NOTNULL UNSIGNED,
             p_type_id       I       UNSIGNED,
-            p_priority_id   I       UNSIGNED,
 
-            name            C(250)  NOTNULL DEFAULT '',
             risk            C(250)  DEFAULT '',
             story_pt        C(250)  DEFAULT '',
             story_pt_post   C(250)  DEFAULT '',
-            text            C(1000) DEFAULT '',
-
             acc_crit        C(1000) DEFAULT ''
             " )
          ),
@@ -87,13 +84,6 @@ class StoryBoardPlugin extends MantisPlugin
             'CreateTableSQL', array( plugin_table( 'type' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             type            C(250)  NOTNULL DEFAULT ''
-            " )
-         ),
-         array
-         (
-            'CreateTableSQL', array( plugin_table( 'priority' ), "
-            id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
-            priority        C(250)  NOTNULL DEFAULT ''
             " )
          )
       );
@@ -165,12 +155,9 @@ class StoryBoardPlugin extends MantisPlugin
       }
 
       $card_type = null;
-      $card_priority = null;
-      $card_name = null;
       $card_risk = null;
       $card_story_pt = null;
       $card_story_pt_post = null;
-      $card_text = null;
       $card_acc_crit = null;
 
       if ( $bug_id != null )
@@ -178,30 +165,24 @@ class StoryBoardPlugin extends MantisPlugin
          $card = $storyboard_db_api->select_story_card( $bug_id );
          if ( !is_null( $card[2] ) )
          {
-            $card_type = $storyboard_db_api->select_attribute_by_id( $card[2], 'type' );
+            $card_type = $storyboard_db_api->select_type_by_typeid( $card[2] );
          }
-         if ( !is_null( $card[3] ) )
-         {
-            $card_priority = $storyboard_db_api->select_attribute_by_id( $card[3], 'priority' );
-         }
-         $card_name = $card[4];
-         $card_risk = $card[5];
-         $card_story_pt = $card[6];
-         $card_story_pt_post = $card[7];
-         $card_text = $card[8];
-         $card_acc_crit = $card[9];
+         $card_risk = $card[3];
+         $card_story_pt = $card[4];
+         $card_story_pt_post = $card[5];
+         $card_acc_crit = $card[6];
       }
 
       switch ( $event )
       {
          case 'EVENT_VIEW_BUG_DETAILS':
-            $storyboard_print_api->printBugViewFields( $card_name, $card_type, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_print_api->printBugViewFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
          case 'EVENT_REPORT_BUG_FORM':
             $storyboard_print_api->printBugReportFields();
             break;
          case 'EVENT_UPDATE_BUG_FORM':
-            $storyboard_print_api->printBugUpdateFields( $card_name, $card_type, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_print_api->printBugUpdateFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
       }
       return null;
@@ -223,29 +204,35 @@ class StoryBoardPlugin extends MantisPlugin
       $card_type_id = null;
       if ( !is_null( $card_type ) )
       {
-         $card_type_id = $storyboard_db_api->select_attributeid_by_attribute( $card_type, 'type' );
+         $card_type_id = $storyboard_db_api->select_typeid_by_typestring( $card_type );
       }
-      $card_priority = gpc_get_string( 'card_priority', '' );
-      $card_priority_id = null;
-      if ( !is_null( $card_priority ) )
-      {
-         $card_priority_id = $storyboard_db_api->select_attributeid_by_attribute( $card_priority, 'priority' );
-      }
-      $card_name = gpc_get_string( 'card_name', '' );
       $card_risk = gpc_get_string( 'card_risk', '' );
       $card_story_pt = gpc_get_string( 'card_story_pt', '' );
       $card_story_pt_post = gpc_get_string( 'card_story_pt_post', '' );
-      $card_text = gpc_get_string( 'card_text', '' );
       $card_acc_crit = gpc_get_string( 'card_acc_crit', '' );
 
       switch ( $event )
       {
          case 'EVENT_REPORT_BUG':
-            $storyboard_db_api->insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_db_api->insert_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
          case 'EVENT_UPDATE_BUG':
-            $storyboard_db_api->update_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+            $storyboard_db_api->update_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
       }
    }
+}
+
+/**
+ * Trigger the removal of plugin data if a bug was removed
+ *
+ * @param $event
+ * @param $bug_id
+ */
+function deleteBugReference( $event, $bug_id )
+{
+   require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+   $storyboard_db_api = new storyboard_db_api();
+
+   $storyboard_db_api->delete_story_card( $bug_id );
 }

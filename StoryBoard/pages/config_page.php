@@ -49,7 +49,7 @@ $storyboard_config_api->printTableRowHead();
 $storyboard_config_api->printFormCategory( 1, 'config_types', false );
 echo '<td colspan="1">';
 
-$type_rows = $storyboard_db_api->select_all_attributes( 'type' );
+$type_rows = $storyboard_db_api->select_all_types();
 foreach ( $type_rows as $type_row )
 {
    $types[] = $type_row[1];
@@ -73,44 +73,6 @@ echo '<input type="submit" name="changetype" class="button" value="' . plugin_la
 echo '</td>';
 echo '</tr>';
 
-
-$storyboard_config_api->printTableRowHead();
-$storyboard_config_api->printFormCategory( 1, 'config_priorityadd', false );
-$priority_level = gpc_get_string( 'priority_level', '' );
-echo '<td colspan="1">';
-echo '<input type="text" id="priority_level" name="priority_level" size="15" maxlength="128" value="', $priority_level, '">&nbsp';
-echo '<input type="submit" name="addpriority_level" class="button" value="' . plugin_lang_get( 'config_add' ) . '">';
-echo '</td>';
-echo '</tr>';
-
-$storyboard_config_api->printTableRowHead();
-$storyboard_config_api->printFormCategory( 1, 'config_prioritys', false );
-echo '<td colspan="1">';
-
-$priority_level_rows = $storyboard_db_api->select_all_attributes( 'priority' );
-foreach ( $priority_level_rows as $priority_level_row )
-{
-   $priority_levels[] = $priority_level_row[1];
-}
-
-echo '<span class="select">';
-echo '<select ' . helper_get_tab_index() . ' id="priority_levels" name="priority_levels">';
-if ( !is_null( $priority_levels ) )
-{
-   foreach ( $priority_levels as $priority_level )
-   {
-      echo '<option value="' . $priority_level . '">' . $priority_level . '</option>';
-   }
-}
-echo '</select>&nbsp';
-$new_priority_level = gpc_get_string( 'newpriority_level', '' );
-echo '<input type="submit" name="deletepriority_level" class="button" value="' . plugin_lang_get( 'config_del' ) . '">&nbsp';
-echo '<input type="text" id="newpriority_level" name="newpriority_level" size="15" maxlength="128" value="', $new_priority_level, '">&nbsp';
-echo '<input type="submit" name="changepriority_level" class="button" value="' . plugin_lang_get( 'config_change' ) . '">';
-
-echo '</td>';
-echo '</tr>';
-
 $storyboard_config_api->printTableRowHead();
 $storyboard_config_api->printFormCategory( 1, 'config_status_cols', false );
 echo '<td valign="top" width="100px">';
@@ -119,7 +81,6 @@ print_enum_string_option_list( 'status', plugin_config_get( 'status_cols', 50 ) 
 echo '</select>';
 echo '</td>';
 echo '</tr>';
-
 
 
 echo '<tr>';

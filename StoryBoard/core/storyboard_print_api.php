@@ -57,24 +57,16 @@ class storyboard_print_api
 
    /**
     * Prints the specific plugin fields in the bug-view user interface
-    * @param $card_name
     * @param $card_type
-    * @param $card_priority
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
-    * @param $card_text
     * @param $card_acc_crit
     */
-   public function printBugViewFields( $card_name, $card_type, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function printBugViewFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit )
    {
       $this->printRow();
       echo '<td class="form-title" colspan="6">' . plugin_lang_get( 'menu_title' ) . '</td>';
-      echo '</tr>';
-
-      $this->printRow();
-      echo '<td class="category" colspan="1">' . plugin_lang_get( 'card_name' ) . '</td>';
-      echo '<td colspan="5" id="card_name">' . $card_name . '</td>';
       echo '</tr>';
 
       $this->printRow();
@@ -83,22 +75,20 @@ class storyboard_print_api
       echo '</tr>';
 
       $this->printRow();
-      echo '<td class="category" colspan="1">' . plugin_lang_get( 'card_priority' ) . '</td>';
-      echo '<td colspan="1" id="card_priority">' . $card_priority . '</td>';
       echo '<td class="category" colspan="1">' . plugin_lang_get( 'card_risk' ) . '</td>';
       echo '<td colspan="1" id="card_risk">' . $card_risk . '</td>';
       echo '<td class="category" colspan="1">' . plugin_lang_get( 'card_story_pt' ) . '</td>';
-      echo '<td colspan="1" id="card_story_pt">' . $card_story_pt . '</td>';
+      echo '<td colspan="3" id="card_story_pt">' . $card_story_pt . '</td>';
       echo '</tr>';
 
       $this->printRow();
       echo '<td class="category">' . plugin_lang_get( 'card_story_pt_post' ) . '</td>';
       echo '<td colspan="1" id="card_story_pt_post">' . $card_story_pt_post . '</td>';
-      echo '<td class="category">' . plugin_lang_get( 'card_text' ) . '</td>';
-      echo '<td colspan="1" id="card_text">' . $card_text . '</td>';
       echo '<td class="category">' . plugin_lang_get( 'card_acc_crit' ) . '</td>';
-      echo '<td colspan="1" id="card_acc_crit">' . $card_acc_crit . '</td>';
+      echo '<td colspan="3" id="card_acc_crit">' . $card_acc_crit . '</td>';
       echo '</tr>';
+
+
    }
 
    /**
@@ -116,13 +106,10 @@ class storyboard_print_api
       {
          echo '<legend><span>' . plugin_lang_get( 'menu_title' ) . '</span></legend>';
       }
-      $this->printBugReportTextInput( 'card_name' );
-      $this->printBugReportSelectInput( 'card_type', 'types' );
-      $this->printBugReportSelectInput( 'card_priority', 'priorities' );
+      $this->printBugReportSelectInput( 'card_type' );
       $this->printBugReportTextInput( 'card_risk' );
       $this->printBugReportTextInput( 'card_story_pt' );
       $this->printBugReportTextInput( 'card_story_pt_post' );
-      $this->printBugReportTextInput( 'card_text' );
       $this->printBugReportTextInput( 'card_acc_crit' );
       if ( $this->getMantisVersion() == '1.2.' )
       {
@@ -139,29 +126,23 @@ class storyboard_print_api
    /**
     * Prints the specific plugin fields in the bug-update user interface
     *
-    * @param $card_name
     * @param $card_type
-    * @param $card_priority
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
-    * @param $card_text
     * @param $card_acc_crit
     */
-   public function printBugUpdateFields( $card_name, $card_type, $card_priority, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function printBugUpdateFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit )
    {
 
       $this->printRow();
       echo '<td class="form-title" colspan="6">' . plugin_lang_get( 'menu_title' ) . '</td>';
       echo '</tr>';
 
-      $this->printBugUpdateTextInput( 'card_name', $card_name );
-      $this->printBugUpdateSelectInput( 'card_type', $card_type, 'types' );
-      $this->printBugUpdateSelectInput( 'card_priority', $card_priority, 'priorities' );
+      $this->printBugUpdateSelectInput( 'card_type', $card_type );
       $this->printBugUpdateTextInput( 'card_risk', $card_risk );
       $this->printBugUpdateTextInput( 'card_story_pt', $card_story_pt );
       $this->printBugUpdateTextInput( 'card_story_pt_post', $card_story_pt_post );
-      $this->printBugUpdateTextInput( 'card_text', $card_text );
       $this->printBugUpdateTextInput( 'card_acc_crit', $card_acc_crit );
    }
 
@@ -200,19 +181,11 @@ class storyboard_print_api
     * @param $input
     * @param $attribute
     */
-   public function printBugReportSelectInput( $input, $attribute )
+   public function printBugReportSelectInput( $input )
    {
       $storyboard_db_api = new storyboard_db_api();
       $values = array();
-      $value_rows = null;
-      if ( $attribute == 'types' )
-      {
-         $value_rows = $storyboard_db_api->select_all_attributes( 'type' );
-      }
-      elseif ( $attribute == 'priorities' )
-      {
-         $value_rows = $storyboard_db_api->select_all_attributes( 'priority' );
-      }
+      $value_rows = $storyboard_db_api->select_all_types();
       foreach ( $value_rows as $value_row )
       {
          $values[] = $value_row[1];
@@ -277,21 +250,12 @@ class storyboard_print_api
    /**
     * @param $input
     * @param $input_value
-    * @param $attribute
     */
-   public function printBugUpdateSelectInput( $input, $input_value, $attribute )
+   public function printBugUpdateSelectInput( $input, $input_value )
    {
       $storyboard_db_api = new storyboard_db_api();
       $values = array();
-      $value_rows = null;
-      if ( $attribute == 'types' )
-      {
-         $value_rows = $storyboard_db_api->select_all_attributes( 'type' );
-      }
-      elseif ( $attribute == 'priorities' )
-      {
-         $value_rows = $storyboard_db_api->select_all_attributes( 'priority' );
-      }
+      $value_rows = $storyboard_db_api->select_all_types();
       foreach ( $value_rows as $value_row )
       {
          $values[] = $value_row[1];

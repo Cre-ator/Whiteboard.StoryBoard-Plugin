@@ -58,51 +58,35 @@ class storyboard_db_api
       return $bug_array;
    }
 
-   // ---------- BEGIN attribute entity ----------------------------------------------------------------------------- //
+   // ---------- BEGIN type entity ---------------------------------------------------------------------------------- //
 
    /**
-    * @param $attribute
     * @return null|string
     */
-   private function initialize_attribute_table( $attribute )
+   private function initialize_type_table()
    {
-      $plugin_attribute_table = null;
+      $plugin_type_table = null;
       if ( $this->get_mantis_version() == '1.2.' )
       {
-         if ( $attribute == 'type' )
-         {
-            $plugin_attribute_table = plugin_table( 'type', 'StoryBoard' );
-         }
-         elseif ( $attribute == 'priority' )
-         {
-            $plugin_attribute_table = plugin_table( 'priority', 'StoryBoard' );
-         }
+         $plugin_type_table = plugin_table( 'type', 'StoryBoard' );
       }
       else
       {
-         if ( $attribute == 'type' )
-         {
-            $plugin_attribute_table = db_get_table( 'plugin_StoryBoard_type' );
-         }
-         elseif ( $attribute == 'priority' )
-         {
-            $plugin_attribute_table = db_get_table( 'plugin_StoryBoard_priority' );
-         }
+         $plugin_type_table = db_get_table( 'plugin_StoryBoard_type' );
       }
 
-      return $plugin_attribute_table;
+      return $plugin_type_table;
    }
 
    /**
-    * Get all attributes
+    * Get all types
     *
-    * @param $attribute
     * @return array
     */
-   public function select_all_attributes( $attribute )
+   public function select_all_types()
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $query = "SELECT * FROM $plugin_attribute_table ORDER BY " . $attribute . " ASC";
+      $plugin_type_table = $this->initialize_type_table();
+      $query = "SELECT * FROM $plugin_type_table ORDER BY type ASC";
 
       $result = $this->mysqli->query( $query );
       $attributes = array();
@@ -120,14 +104,13 @@ class storyboard_db_api
    /**
     * Get the primary key for a specific type string
     *
-    * @param $attribute_string
-    * @param $attribute
+    * @param $type_string
     * @return mixed
     */
-   public function select_attributeid_by_attribute( $attribute_string, $attribute )
+   public function select_typeid_by_typestring( $type_string )
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $query = "SELECT id FROM $plugin_attribute_table WHERE " . $attribute . " = '" . $attribute_string . "'";
+      $plugin_type_table = $this->initialize_type_table();
+      $query = "SELECT id FROM $plugin_type_table WHERE type = '" . $type_string . "'";
 
       $result = $this->mysqli->query( $query );
       if ( 0 != $result->num_rows )
@@ -145,14 +128,13 @@ class storyboard_db_api
    /**
     * Get type by specified type id
     *
-    * @param $attribute_id
-    * @param $attribute
+    * @param $type_id
     * @return array|null
     */
-   public function select_attribute_by_id( $attribute_id, $attribute )
+   public function select_type_by_typeid( $type_id )
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $query = "SELECT " . $attribute . " FROM $plugin_attribute_table WHERE id = " . $attribute_id;
+      $plugin_type_table = $this->initialize_type_table();
+      $query = "SELECT type FROM $plugin_type_table WHERE id = " . $type_id;
 
       $result = $this->mysqli->query( $query );
       if ( 0 != $result->num_rows )
@@ -170,32 +152,30 @@ class storyboard_db_api
    /**
     * Add a specific type
     *
-    * @param $attribute_string
-    * @param $attribute
+    * @param $type_string
     */
-   public function insert_attribute( $attribute_string, $attribute )
+   public function insert_type( $type_string )
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $query = "INSERT INTO $plugin_attribute_table ( id, " . $attribute . " ) SELECT null,'"
-         . $attribute_string . "' FROM DUAL WHERE NOT EXISTS ( SELECT 1 FROM $plugin_attribute_table WHERE "
-         . $attribute . " = '" . $attribute_string . "')";
+      $plugin_type_table = $this->initialize_type_table();
+      $query = "INSERT INTO $plugin_type_table ( id, type ) SELECT null,'"
+         . $type_string . "' FROM DUAL WHERE NOT EXISTS ( SELECT 1 FROM $plugin_type_table WHERE type = '"
+         . $type_string . "')";
       $this->mysqli->query( $query );
    }
 
    /**
     * Update an existing type string
     *
-    * @param $attribute_id
-    * @param $new_attribute_string
-    * @param $attribute
+    * @param $type_id
+    * @param $new_type_string
     */
-   public function update_attribute( $attribute_id, $new_attribute_string, $attribute )
+   public function update_type( $type_id, $new_type_string )
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
+      $plugin_type_table = $this->initialize_type_table();
       $query = "SET SQL_SAFE_UPDATES = 0";
       $this->mysqli->query( $query );
 
-      $query = "UPDATE $plugin_attribute_table SET " . $attribute . " = '" . $new_attribute_string . "' WHERE id = " . $attribute_id;
+      $query = "UPDATE $plugin_type_table SET type = '" . $new_type_string . "' WHERE id = " . $type_id;
       $this->mysqli->query( $query );
 
       $query = "SET SQL_SAFE_UPDATES = 1";
@@ -205,18 +185,17 @@ class storyboard_db_api
    /**
     * Delete a specific type
     *
-    * @param $string
-    * @param $attribute
+    * @param $type_string
     */
-   public function delete_attribute( $string, $attribute )
+   public function delete_type( $type_string )
    {
-      $plugin_attribute_table = $this->initialize_attribute_table( $attribute );
-      $primary_key = $this->select_attributeid_by_attribute( $string, $attribute );
-      $query = "DELETE FROM $plugin_attribute_table WHERE id = " . $primary_key;
+      $plugin_type_table = $this->initialize_type_table();
+      $primary_key = $this->select_typeid_by_typestring( $type_string );
+      $query = "DELETE FROM $plugin_type_table WHERE id = " . $primary_key;
       $this->mysqli->query( $query );
    }
 
-   // ---------- END attribute entity ------------------------------------------------------------------------------- //
+   // ---------- END type entity ------------------------------------------------------------------------------------ //
 
    // ---------- BEGIN card entity ---------------------------------------------------------------------------------- //
 
@@ -265,27 +244,21 @@ class storyboard_db_api
    /**
     * @param $bug_id
     * @param $card_type_id
-    * @param $card_priority_id
-    * @param $card_name
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
-    * @param $card_text
     * @param $card_acc_crit
     */
-   public function insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function insert_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit )
    {
       $plugin_card_table = $this->initialize_card_table();
-      $query = "INSERT INTO $plugin_card_table ( id, bug_id, p_type_id, p_priority_id, name, risk, story_pt, story_pt_post, text, acc_crit )
+      $query = "INSERT INTO $plugin_card_table ( id, bug_id, p_type_id, risk, story_pt, story_pt_post, acc_crit )
          SELECT null,"
          . $bug_id . ","
-         . $card_type_id . ","
-         . $card_priority_id . ",'"
-         . $card_name . "','"
+         . $card_type_id . ",'"
          . $card_risk . "','"
          . $card_story_pt . "','"
          . $card_story_pt_post . "','"
-         . $card_text . "','"
          . $card_acc_crit . "'
          FROM DUAL WHERE NOT EXISTS (
          SELECT 1 FROM $plugin_card_table
@@ -297,19 +270,16 @@ class storyboard_db_api
    /**
     * @param $bug_id
     * @param $card_type_id
-    * @param $card_priority_id
-    * @param $card_name
     * @param $card_risk
     * @param $card_story_pt
     * @param $card_story_pt_post
-    * @param $card_text
     * @param $card_acc_crit
     */
-   public function update_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit )
+   public function update_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit )
    {
       if ( $this->select_story_card( $bug_id ) == null )
       {
-         $this->insert_story_card( $bug_id, $card_type_id, $card_priority_id, $card_name, $card_risk, $card_story_pt, $card_story_pt_post, $card_text, $card_acc_crit );
+         $this->insert_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
       }
       else
       {
@@ -319,12 +289,9 @@ class storyboard_db_api
 
          $query = "UPDATE $plugin_card_table
             SET p_type_id = " . $card_type_id . ",
-            p_priority_id = " . $card_priority_id . ",
-            name = '" . $card_name . "',
             risk = '" . $card_risk . "',
             story_pt = '" . $card_story_pt . "',
             story_pt_post = '" . $card_story_pt_post . "',
-            text = '" . $card_text . "',
             acc_crit = '" . $card_acc_crit . "'";
          $query .= " WHERE bug_id = " . $bug_id;
 
