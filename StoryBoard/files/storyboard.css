@@ -81,3 +81,18 @@ a.rcv_tooltip span
     -webkit-border-radius: 6px;
     border-radius: 6px;
 }
+
+table.story_baord
+{
+    width: 74%;
+    margin-left: 13%;
+    margin-right: 13%;
+    border-collapse: collapse;
+    border: 1px solid #000000;
+}
+
+td.story_baord
+{
+    width: 150px;
+    height: 150px;
+}

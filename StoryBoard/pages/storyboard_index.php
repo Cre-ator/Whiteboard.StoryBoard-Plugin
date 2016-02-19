@@ -6,7 +6,7 @@ $storyboard_print_api = new storyboard_print_api();
 $status_cols = plugin_config_get( 'status_cols' );
 
 $storyboard_print_api->print_page_head( plugin_lang_get( 'menu_title' ) );
-echo '<table class="width75">';
+echo '<table class="story_baord">';
 print_thead( $status_cols );
 print_tbody( $status_cols );
 echo '</table>';
@@ -45,10 +45,10 @@ function print_tbody( $status_cols )
    foreach ( $types as $type )
    {
       echo '<tr>';
-      echo '<td>' . $type[1] . '</td>';
+      echo '<td class="category">' . $type[1] . '</td>';
       foreach ( $status_cols as $status_col )
       {
-         echo '<td>';
+         echo '<td class="story_baord">';
          foreach ( $project_spec_bug_ids as $project_spec_bug_id )
          {
             $card = $storyboard_db_api->select_story_card( $project_spec_bug_id );

@@ -179,7 +179,6 @@ class storyboard_print_api
 
    /**
     * @param $input
-    * @param $attribute
     */
    public function printBugReportSelectInput( $input )
    {

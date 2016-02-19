@@ -30,7 +30,7 @@ class StoryBoardPlugin extends MantisPlugin
          'EVENT_VIEW_BUG_DETAILS' => 'bugViewFields',
          'EVENT_REPORT_BUG' => 'bugUpdateFields',
          'EVENT_UPDATE_BUG' => 'bugUpdateFields',
-         'EVENT_BUG_DELETED' => 'deleteBugReference',
+         'EVENT_BUG_DELETED' => 'deleteBugReference'
       );
       return $hooks;
    }
@@ -199,7 +199,14 @@ class StoryBoardPlugin extends MantisPlugin
       require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
       $storyboard_db_api = new storyboard_db_api();
 
-      $bug_id = $bug->id;
+      if ( substr( MANTIS_VERSION, 0, 4 ) > '1.2.' )
+      {
+         $bug_id = $bug->id;
+      }
+      else
+      {
+         $bug_id = gpc_get_int( 'bug_id', null );
+      }
       $card_type = gpc_get_string( 'card_type', '' );
       $card_type_id = null;
       if ( !is_null( $card_type ) )
