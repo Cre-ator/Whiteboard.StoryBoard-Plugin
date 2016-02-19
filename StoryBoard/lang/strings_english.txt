@@ -1,0 +1,19 @@
+<?php
+$s_plugin_StoryBoard_menu_title = 'Story Board';
+
+$s_plugin_StoryBoard_config_title = 'Story Board - Configuration';
+$s_plugin_StoryBoard_config_caption = 'General Configuration';
+$s_plugin_StoryBoard_config_accesslevel = 'Access Level';
+$s_plugin_StoryBoard_config_footer = 'Show Plugin Info In Footer?';
+$s_plugin_StoryBoard_config_typeadd = 'Add Storycard-Type';
+$s_plugin_StoryBoard_config_types = 'Available Storycard-Types';
+$s_plugin_StoryBoard_config_add = 'Add';
+$s_plugin_StoryBoard_config_del = 'Remove';
+$s_plugin_StoryBoard_config_change = 'Change';
+$s_plugin_StoryBoard_config_status_cols = 'Status for Storyboard Columns';
+
+$s_plugin_StoryBoard_card_type = 'Storycard-Type';
+$s_plugin_StoryBoard_card_risk = 'Risk';
+$s_plugin_StoryBoard_card_story_pt = 'Story Points';
+$s_plugin_StoryBoard_card_story_pt_post = 'Story Points (Post-Estimation)';
+$s_plugin_StoryBoard_card_acc_crit = 'Acceptance criteria';
