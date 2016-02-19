@@ -20,6 +20,20 @@ pre
     word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
+div.story_card
+{
+    position: absolute;
+    height: 30px;
+    border: 1px solid #777;
+    color: #121212;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fde679), to(#ded06c));
+    background-image: -webkit-linear-gradient(top, #fde679, #ded06c);
+    background-image: -moz-linear-gradient(top, #fde679, #ded06c);
+    background-image: -ms-linear-gradient(top, #fde679, #ded06c);
+    background-image: -o-linear-gradient(top, #fde679, #ded06c);
+    background-image: linear-gradient(top, #fde679, #ded06c);
+}
+
 div.rcv_tooltip_title
 {
     border-bottom: 1px solid #777;
@@ -89,6 +103,7 @@ table.story_baord
     margin-right: 13%;
     border-collapse: collapse;
     border: 1px solid #000000;
+    border
 }
 
 td.story_baord

@@ -58,6 +58,7 @@ function print_tbody( $status_cols )
                if ( $bug_status == $status_col )
                {
                   echo '<a href="' . string_get_bug_view_url( $project_spec_bug_id ) . '" class="rcv_tooltip">';
+                  echo '<div class="story_card">';
                   echo string_display_line( bug_format_id( $project_spec_bug_id ) );
                   echo '<span>';
                   print_story_card_title( $project_spec_bug_id );
@@ -68,7 +69,8 @@ function print_tbody( $status_cols )
                   print_story_card_info( 'card_story_pt_post', $card[5], true );
                   print_story_card_info( 'card_acc_crit', $card[6], true );
                   echo '</span>';
-                  echo '</a><br/>';
+                  echo '</div>';
+                  echo '</a><br/><br/><br/>';
                }
             }
          }
