@@ -1,0 +1,19 @@
+<?php
+$s_plugin_StoryBoard_menu_title = '故事板';
+
+$s_plugin_StoryBoard_config_title = '故事板-配置';
+$s_plugin_StoryBoard_config_caption = '基本设置';
+$s_plugin_StoryBoard_config_accesslevel = '访问级别';
+$s_plugin_StoryBoard_config_footer = '在页脚中显示插件信息吗?';
+$s_plugin_StoryBoard_config_typeadd = '添加故事卡片类型';
+$s_plugin_StoryBoard_config_types = '可用的故事卡片类型';
+$s_plugin_StoryBoard_config_add = '添加';
+$s_plugin_StoryBoard_config_del = '删除';
+$s_plugin_StoryBoard_config_change = '更改';
+$s_plugin_StoryBoard_config_status_cols = '故事版列的状态';
+
+$s_plugin_StoryBoard_card_type = '故事卡片-类型';
+$s_plugin_StoryBoard_card_risk = '风险';
+$s_plugin_StoryBoard_card_story_pt = '故事点';
+$s_plugin_StoryBoard_card_story_pt_post = '故事点 (后估计)';
+$s_plugin_StoryBoard_card_acc_crit = '验收标准';

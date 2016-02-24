@@ -8,7 +8,7 @@ class StoryBoardPlugin extends MantisPlugin
       $this->description = '...';
       $this->page = 'config_page';
 
-      $this->version = '1.0.3';
+      $this->version = '1.0.4';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99',
@@ -173,17 +173,20 @@ class StoryBoardPlugin extends MantisPlugin
          $card_acc_crit = $card[6];
       }
 
-      switch ( $event )
+      if ( $this->getUserHasLevel() )
       {
-         case 'EVENT_VIEW_BUG_DETAILS':
-            $storyboard_print_api->printBugViewFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
-            break;
-         case 'EVENT_REPORT_BUG_FORM':
-            $storyboard_print_api->printBugReportFields();
-            break;
-         case 'EVENT_UPDATE_BUG_FORM':
-            $storyboard_print_api->printBugUpdateFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
-            break;
+         switch ( $event )
+         {
+            case 'EVENT_VIEW_BUG_DETAILS':
+               $storyboard_print_api->printBugViewFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+               break;
+            case 'EVENT_REPORT_BUG_FORM':
+               $storyboard_print_api->printBugReportFields();
+               break;
+            case 'EVENT_UPDATE_BUG_FORM':
+               $storyboard_print_api->printBugUpdateFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+               break;
+         }
       }
       return null;
    }
