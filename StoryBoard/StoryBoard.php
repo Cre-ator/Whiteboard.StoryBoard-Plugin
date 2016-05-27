@@ -2,13 +2,13 @@
 
 class StoryBoardPlugin extends MantisPlugin
 {
-   function register()
+   function register ()
    {
       $this->name = 'Story Board';
       $this->description = '...';
       $this->page = 'config_page';
 
-      $this->version = '1.0.5';
+      $this->version = '1.0.7';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99',
@@ -19,7 +19,7 @@ class StoryBoardPlugin extends MantisPlugin
       $this->url = '';
    }
 
-   function hooks()
+   function hooks ()
    {
       $hooks = array
       (
@@ -35,17 +35,17 @@ class StoryBoardPlugin extends MantisPlugin
       return $hooks;
    }
 
-   function init()
+   function init ()
    {
-      $t_core_path = config_get_global( 'plugin_path' )
-         . plugin_get_current()
+      $t_core_path = config_get_global ( 'plugin_path' )
+         . plugin_get_current ()
          . DIRECTORY_SEPARATOR
          . 'core'
          . DIRECTORY_SEPARATOR;
-      require_once( $t_core_path . 'storyboard_constant_api.php' );
+      require_once ( $t_core_path . 'storyboard_constant_api.php' );
    }
 
-   function config()
+   function config ()
    {
       return array
       (
@@ -53,7 +53,7 @@ class StoryBoardPlugin extends MantisPlugin
          'ShowInFooter' => ON,
          'ShowMenu' => ON,
 
-         'status_cols' => array(
+         'status_cols' => array (
             '0' => 20,
             '1' => 30,
             '2' => 40,
@@ -62,13 +62,13 @@ class StoryBoardPlugin extends MantisPlugin
       );
    }
 
-   function schema()
+   function schema ()
    {
       return array
       (
          array
          (
-            'CreateTableSQL', array( plugin_table( 'card' ), "
+            'CreateTableSQL', array ( plugin_table ( 'card' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             bug_id          I       NOTNULL UNSIGNED,
             p_type_id       I       UNSIGNED,
@@ -81,7 +81,7 @@ class StoryBoardPlugin extends MantisPlugin
          ),
          array
          (
-            'CreateTableSQL', array( plugin_table( 'type' ), "
+            'CreateTableSQL', array ( plugin_table ( 'type' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             type            C(250)  NOTNULL DEFAULT ''
             " )
@@ -94,12 +94,12 @@ class StoryBoardPlugin extends MantisPlugin
     *
     * @return bool - Userlevel is greater or equal then plugin access level
     */
-   function getUserHasLevel()
+   function getUserHasLevel ()
    {
-      $project_id = helper_get_current_project();
-      $user_id = auth_get_current_user_id();
+      $project_id = helper_get_current_project ();
+      $user_id = auth_get_current_user_id ();
 
-      return user_get_access_level( $user_id, $project_id ) >= plugin_config_get( 'AccessLevel', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT );
+      return user_get_access_level ( $user_id, $project_id ) >= plugin_config_get ( 'AccessLevel', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT );
    }
 
    /**
@@ -107,9 +107,9 @@ class StoryBoardPlugin extends MantisPlugin
     *
     * @return null|string
     */
-   function footer()
+   function footer ()
    {
-      if ( plugin_config_get( 'ShowInFooter' ) && $this->getUserHasLevel() )
+      if ( plugin_config_get ( 'ShowInFooter' ) && $this->getUserHasLevel () )
       {
          return '<address>' . $this->name . ' ' . $this->version . ' Copyright &copy; 2016 by ' . $this->author . '</address>';
       }
@@ -121,11 +121,13 @@ class StoryBoardPlugin extends MantisPlugin
     *
     * @return null|string
     */
-   function menu()
+   function menu ()
    {
-      if ( !plugin_is_installed( 'WhiteboardMenu' ) && plugin_config_get( 'ShowMenu' ) && $this->getUserHasLevel() )
+      if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
+         && plugin_config_get ( 'ShowMenu' ) && $this->getUserHasLevel ()
+      )
       {
-         return '<a href="' . plugin_page( 'storyboard_index' ) . '">' . plugin_lang_get( 'menu_title' ) . '</a>';
+         return '<a href="' . plugin_page ( 'storyboard_index' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a>';
       }
       return null;
    }
@@ -136,10 +138,10 @@ class StoryBoardPlugin extends MantisPlugin
     * @param $event
     * @return null
     */
-   function bugViewFields( $event )
+   function bugViewFields ( $event )
    {
-      require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
-      require_once( STORYBOARD_CORE_URI . 'storyboard_print_api.php' );
+      require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+      require_once ( STORYBOARD_CORE_URI . 'storyboard_print_api.php' );
       $storyboard_db_api = new storyboard_db_api();
       $storyboard_print_api = new storyboard_print_api();
       $bug_id = null;
@@ -147,10 +149,10 @@ class StoryBoardPlugin extends MantisPlugin
       switch ( $event )
       {
          case 'EVENT_UPDATE_BUG_FORM':
-            $bug_id = gpc_get_int( 'bug_id' );
+            $bug_id = gpc_get_int ( 'bug_id' );
             break;
          case 'EVENT_VIEW_BUG_DETAILS':
-            $bug_id = gpc_get_int( 'id' );
+            $bug_id = gpc_get_int ( 'id' );
             break;
       }
 
@@ -162,29 +164,29 @@ class StoryBoardPlugin extends MantisPlugin
 
       if ( $bug_id != null )
       {
-         $card = $storyboard_db_api->select_story_card( $bug_id );
-         if ( !is_null( $card[2] ) )
+         $card = $storyboard_db_api->select_story_card ( $bug_id );
+         if ( !is_null ( $card[ 2 ] ) )
          {
-            $card_type = $storyboard_db_api->select_type_by_typeid( $card[2] );
+            $card_type = $storyboard_db_api->select_type_by_typeid ( $card[ 2 ] );
          }
-         $card_risk = $card[3];
-         $card_story_pt = $card[4];
-         $card_story_pt_post = $card[5];
-         $card_acc_crit = $card[6];
+         $card_risk = $card[ 3 ];
+         $card_story_pt = $card[ 4 ];
+         $card_story_pt_post = $card[ 5 ];
+         $card_acc_crit = $card[ 6 ];
       }
 
-      if ( $this->getUserHasLevel() )
+      if ( $this->getUserHasLevel () )
       {
          switch ( $event )
          {
             case 'EVENT_VIEW_BUG_DETAILS':
-               $storyboard_print_api->printBugViewFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+               $storyboard_print_api->printBugViewFields ( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
                break;
             case 'EVENT_REPORT_BUG_FORM':
-               $storyboard_print_api->printBugReportFields();
+               $storyboard_print_api->printBugReportFields ();
                break;
             case 'EVENT_UPDATE_BUG_FORM':
-               $storyboard_print_api->printBugUpdateFields( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+               $storyboard_print_api->printBugUpdateFields ( $card_type, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
                break;
          }
       }
@@ -197,37 +199,37 @@ class StoryBoardPlugin extends MantisPlugin
     * @param $event
     * @param BugData $bug
     */
-   function bugUpdateFields( $event, BugData $bug )
+   function bugUpdateFields ( $event, BugData $bug )
    {
-      require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+      require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
       $storyboard_db_api = new storyboard_db_api();
 
-      if ( substr( MANTIS_VERSION, 0, 4 ) > '1.2.' )
+      if ( substr ( MANTIS_VERSION, 0, 4 ) > '1.2.' )
       {
          $bug_id = $bug->id;
       }
       else
       {
-         $bug_id = gpc_get_int( 'bug_id', null );
+         $bug_id = gpc_get_int ( 'bug_id', null );
       }
-      $card_type = gpc_get_string( 'card_type', '' );
+      $card_type = gpc_get_string ( 'card_type', '' );
       $card_type_id = null;
-      if ( !is_null( $card_type ) )
+      if ( !is_null ( $card_type ) )
       {
-         $card_type_id = $storyboard_db_api->select_typeid_by_typestring( $card_type );
+         $card_type_id = $storyboard_db_api->select_typeid_by_typestring ( $card_type );
       }
-      $card_risk = gpc_get_string( 'card_risk', '' );
-      $card_story_pt = gpc_get_string( 'card_story_pt', '' );
-      $card_story_pt_post = gpc_get_string( 'card_story_pt_post', '' );
-      $card_acc_crit = gpc_get_string( 'card_acc_crit', '' );
+      $card_risk = gpc_get_string ( 'card_risk', '' );
+      $card_story_pt = gpc_get_string ( 'card_story_pt', '' );
+      $card_story_pt_post = gpc_get_string ( 'card_story_pt_post', '' );
+      $card_acc_crit = gpc_get_string ( 'card_acc_crit', '' );
 
       switch ( $event )
       {
          case 'EVENT_REPORT_BUG':
-            $storyboard_db_api->insert_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+            $storyboard_db_api->insert_story_card ( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
          case 'EVENT_UPDATE_BUG':
-            $storyboard_db_api->update_story_card( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
+            $storyboard_db_api->update_story_card ( $bug_id, $card_type_id, $card_risk, $card_story_pt, $card_story_pt_post, $card_acc_crit );
             break;
       }
    }
@@ -239,10 +241,10 @@ class StoryBoardPlugin extends MantisPlugin
  * @param $event
  * @param $bug_id
  */
-function deleteBugReference( $event, $bug_id )
+function deleteBugReference ( $event, $bug_id )
 {
-   require_once( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+   require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
    $storyboard_db_api = new storyboard_db_api();
 
-   $storyboard_db_api->delete_story_card( $bug_id );
+   $storyboard_db_api->delete_story_card ( $bug_id );
 }
