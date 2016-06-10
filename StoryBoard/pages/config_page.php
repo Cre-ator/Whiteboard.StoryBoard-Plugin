@@ -6,7 +6,7 @@ $storyboard_config_api = new storyboard_config_api();
 $storyboard_db_api = new storyboard_db_api();
 
 auth_reauthenticate();
-access_ensure_global_level( plugin_config_get( 'AccessLevel' ) );
+access_ensure_global_level( plugin_config_get( 'access_level' ) );
 
 html_page_top1( plugin_lang_get( 'config_title' ) );
 html_page_top2();
@@ -24,15 +24,15 @@ echo '</tr>';
 $storyboard_config_api->printTableRowHead();
 $storyboard_config_api->printFormCategory( 1, 'config_accesslevel', true );
 echo '<td width="200px" colspan="1">';
-echo '<select name="AccessLevel">';
-print_enum_string_option_list( 'access_levels', plugin_config_get( 'AccessLevel', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT ) );
+echo '<select name="access_level">';
+print_enum_string_option_list( 'access_levels', plugin_config_get( 'access_level', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT ) );
 echo '</select>';
 echo '</td>';
 echo '</tr>';
 
 $storyboard_config_api->printTableRowHead();
 $storyboard_config_api->printFormCategory( 1, 'config_footer', false );
-$storyboard_config_api->printButton( 'ShowInFooter' );
+$storyboard_config_api->printButton( 'show_in_footer' );
 echo '</tr>';
 
 

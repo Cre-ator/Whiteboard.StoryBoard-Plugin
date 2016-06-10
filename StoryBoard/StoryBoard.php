@@ -8,7 +8,7 @@ class StoryBoardPlugin extends MantisPlugin
       $this->description = '...';
       $this->page = 'config_page';
 
-      $this->version = '1.0.7';
+      $this->version = '1.0.8';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99',
@@ -49,9 +49,9 @@ class StoryBoardPlugin extends MantisPlugin
    {
       return array
       (
-         'AccessLevel' => ADMINISTRATOR,
-         'ShowInFooter' => ON,
-         'ShowMenu' => ON,
+         'access_level' => ADMINISTRATOR,
+         'show_in_footer' => ON,
+         'show_menu' => ON,
 
          'status_cols' => array (
             '0' => 20,
@@ -99,7 +99,7 @@ class StoryBoardPlugin extends MantisPlugin
       $project_id = helper_get_current_project ();
       $user_id = auth_get_current_user_id ();
 
-      return user_get_access_level ( $user_id, $project_id ) >= plugin_config_get ( 'AccessLevel', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT );
+      return user_get_access_level ( $user_id, $project_id ) >= plugin_config_get ( 'access_level', PLUGINS_STORYBOARD_THRESHOLD_LEVEL_DEFAULT );
    }
 
    /**
@@ -109,7 +109,7 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function footer ()
    {
-      if ( plugin_config_get ( 'ShowInFooter' ) && $this->getUserHasLevel () )
+      if ( plugin_config_get ( 'show_in_footer' ) && $this->getUserHasLevel () )
       {
          return '<address>' . $this->name . ' ' . $this->version . ' Copyright &copy; 2016 by ' . $this->author . '</address>';
       }
@@ -124,7 +124,7 @@ class StoryBoardPlugin extends MantisPlugin
    function menu ()
    {
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
-         && plugin_config_get ( 'ShowMenu' ) && $this->getUserHasLevel ()
+         && plugin_config_get ( 'show_menu' ) && $this->getUserHasLevel ()
       )
       {
          return '<a href="' . plugin_page ( 'storyboard_index' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a>';
