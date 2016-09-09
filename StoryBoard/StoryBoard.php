@@ -2,21 +2,24 @@
 
 class StoryBoardPlugin extends MantisPlugin
 {
+   private $shortName = null;
+
    function register ()
    {
-      $this->name = 'Story Board';
+      $this->shortName = 'Story Board';
+      $this->name = 'Whiteboard.' . $this->shortName;
       $this->description = '...';
       $this->page = 'config_page';
 
-      $this->version = '1.0.8';
+      $this->version = '1.0.9';
       $this->requires = array
       (
          'MantisCore' => '1.2.0, <= 1.3.99',
       );
 
-      $this->author = 'Stefan Schwarz, Rainer Dierck';
+      $this->author = 'cbb software GmbH (Rainer Dierck, Stefan Schwarz)';
       $this->contact = '';
-      $this->url = '';
+      $this->url = 'https://github.com/Cre-ator';
    }
 
    function hooks ()
@@ -37,12 +40,7 @@ class StoryBoardPlugin extends MantisPlugin
 
    function init ()
    {
-      $t_core_path = config_get_global ( 'plugin_path' )
-         . plugin_get_current ()
-         . DIRECTORY_SEPARATOR
-         . 'core'
-         . DIRECTORY_SEPARATOR;
-      require_once ( $t_core_path . 'storyboard_constant_api.php' );
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_constant_api.php' );
    }
 
    function config ()
@@ -64,11 +62,12 @@ class StoryBoardPlugin extends MantisPlugin
 
    function schema ()
    {
-      return array
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'sbApi.php' );
+      $tableArray = array ();
+
+      $storyBoardCardTable = array
       (
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'card' ), "
+         'CreateTableSQL', array ( plugin_table ( 'card' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             bug_id          I       NOTNULL UNSIGNED,
             p_type_id       I       UNSIGNED,
@@ -78,15 +77,38 @@ class StoryBoardPlugin extends MantisPlugin
             story_pt_post   C(250)  DEFAULT '',
             acc_crit        C(1000) DEFAULT ''
             " )
-         ),
-         array
-         (
-            'CreateTableSQL', array ( plugin_table ( 'type' ), "
+      );
+
+      $storyBoardTypeTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'type' ), "
             id              I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
             type            C(250)  NOTNULL DEFAULT ''
             " )
-         )
       );
+
+      $whiteboardMenuTable = array
+      (
+         'CreateTableSQL', array ( plugin_table ( 'menu', 'whiteboard' ), "
+            id                   I       NOTNULL UNSIGNED AUTOINCREMENT PRIMARY,
+            plugin_name          C(250)  DEFAULT '',
+            plugin_access_level  I       UNSIGNED,
+            plugin_show_menu     I       UNSIGNED,
+            plugin_menu_path     C(250)  DEFAULT ''
+            " )
+      );
+
+      array_push ( $tableArray, $storyBoardCardTable );
+      array_push ( $tableArray, $storyBoardTypeTable );
+
+      $boolArray = sbApi::checkWhiteboardTablesExist ();
+      # add whiteboardmenu table if it does not exist
+      if ( !$boolArray[ 0 ] )
+      {
+         array_push ( $tableArray, $whiteboardMenuTable );
+      }
+
+      return $tableArray;
    }
 
    /**
@@ -123,6 +145,12 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function menu ()
    {
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'sbApi.php' );
+      if ( !sbApi::checkPluginIsRegisteredInWhiteboardMenu () )
+      {
+         sbApi::addPluginToWhiteboardMenu ();
+      }
+
       if ( ( !plugin_is_installed ( 'WhiteboardMenu' ) || !file_exists ( config_get_global ( 'plugin_path' ) . 'WhiteboardMenu' ) )
          && plugin_config_get ( 'show_menu' ) && $this->getUserHasLevel ()
       )
@@ -130,6 +158,12 @@ class StoryBoardPlugin extends MantisPlugin
          return '<a href="' . plugin_page ( 'storyboard_index' ) . '">' . plugin_lang_get ( 'menu_title' ) . '</a>';
       }
       return null;
+   }
+
+   function uninstall ()
+   {
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'sbApi.php' );
+      sbApi::removePluginFromWhiteboardMenu ();
    }
 
    /**
@@ -140,8 +174,8 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function bugViewFields ( $event )
    {
-      require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
-      require_once ( STORYBOARD_CORE_URI . 'storyboard_print_api.php' );
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_db_api.php' );
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_print_api.php' );
       $storyboard_db_api = new storyboard_db_api();
       $storyboard_print_api = new storyboard_print_api();
       $bug_id = null;
@@ -201,7 +235,7 @@ class StoryBoardPlugin extends MantisPlugin
     */
    function bugUpdateFields ( $event, BugData $bug )
    {
-      require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+      require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_db_api.php' );
       $storyboard_db_api = new storyboard_db_api();
 
       if ( substr ( MANTIS_VERSION, 0, 4 ) > '1.2.' )
@@ -243,7 +277,7 @@ class StoryBoardPlugin extends MantisPlugin
  */
 function deleteBugReference ( $event, $bug_id )
 {
-   require_once ( STORYBOARD_CORE_URI . 'storyboard_db_api.php' );
+   require_once ( __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_db_api.php' );
    $storyboard_db_api = new storyboard_db_api();
 
    $storyboard_db_api->delete_story_card ( $bug_id );

@@ -1,11 +1,13 @@
 <?php
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_constant_api.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_config_api.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'storyboard_db_api.php' );
+require_once ( __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'sbApi.php' );
+
 auth_reauthenticate ();
 access_ensure_global_level ( config_get ( 'AccessLevel' ) );
 form_security_validate ( 'plugin_StoryBoard_config_update' );
 
-require_once STORYBOARD_CORE_URI . 'storyboard_constant_api.php';
-require_once STORYBOARD_CORE_URI . 'storyboard_config_api.php';
-require_once STORYBOARD_CORE_URI . 'storyboard_db_api.php';
 $storyboard_config_api = new storyboard_config_api();
 $storyboard_db_api = new storyboard_db_api();
 
@@ -20,6 +22,7 @@ $option_changetype = gpc_get_bool ( 'changetype', false );
 if ( $option_change )
 {
    $storyboard_config_api->updateValue ( 'access_level', ADMINISTRATOR );
+   vmApi::editPluginInWhiteboardMenu ( 'plugin_access_level', gpc_get_int ( 'access_level', ADMINISTRATOR ) );
    $storyboard_config_api->updateButton ( 'show_in_footer' );
    if ( !empty( $_POST[ 'status_cols' ] ) )
    {
