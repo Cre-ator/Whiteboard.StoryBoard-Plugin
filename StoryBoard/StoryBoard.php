@@ -133,7 +133,7 @@ class StoryBoardPlugin extends MantisPlugin
    {
       if ( plugin_config_get ( 'show_in_footer' ) && $this->getUserHasLevel () )
       {
-         return '<address>' . $this->name . ' ' . $this->version . ' Copyright &copy; 2016 by ' . $this->author . '</address>';
+         return '<address>' . $this->shortName . ' ' . $this->version . ' Copyright &copy; 2016 by ' . $this->author . '</address>';
       }
       return null;
    }
