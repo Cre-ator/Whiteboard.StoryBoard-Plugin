@@ -97,7 +97,7 @@ class sbApi
       $pluginName = plugin_get_current ();
       $pluginAccessLevel = ADMINISTRATOR;
       $pluginShowMenu = ON;
-      $pluginPath = '<a href="' . plugin_page ( 'storyboard_index' ) . '">';
+      $pluginPath = plugin_page ( 'storyboard_index' );
 
       $mysqli = self::initializeDbConnection ();
 
